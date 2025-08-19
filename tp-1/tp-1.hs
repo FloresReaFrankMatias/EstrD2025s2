@@ -229,6 +229,6 @@ sinElPrimero ::[a] -> [a]
 --Precondicion:La lista dada no debe ser vacia
 sinElPrimero (_:xs) = xs
 --6.5
-splitHead ::[a] -> (a,[a])
 --Precondicion:La lista dada no debe ser vacia
-splitHead (x:xs) = (elPrimero(x:xs), sinElPrimero(x:xs) )
+splitHead :: [a] -> (a, [a])
+splitHead (x:xs) = (x, xs)
