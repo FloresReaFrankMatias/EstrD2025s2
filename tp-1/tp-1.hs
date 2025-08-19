@@ -198,7 +198,7 @@ juntarPokemon (Entrenador _ p1 p2,Entrenador _ p3 p4)= [p1,p2,p3,p4]
 -- a
 
 loMismo :: a -> a
-loMismo a = a
+loMismo x = x
 
 --b
 siempreSiete :: a -> Int
@@ -219,11 +219,11 @@ Estas funciones son  polimorficas porque pueden recibir argumentos de caulquier 
 --6.2
 estaVacia :: [a] ->Bool
 estaVacia [] = True
-estaVacia _ = False    
+estaVacia (_:_) = False    
 --6.3
 elPrimero :: [a] -> [a]
 --Precondicion: la lista dada debe tener al menos un elemento
-elPrimero (a:_) =[a]
+elPrimero (x:_) =[x]
 --6.4
 sinElPrimero ::[a] -> [a]
 --Precondicion:La lista dada no debe ser vacia
