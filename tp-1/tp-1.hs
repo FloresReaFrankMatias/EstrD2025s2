@@ -89,8 +89,8 @@ numeroDia Jueves    = 4
 numeroDia Viernes   = 5
 numeroDia Sabado    = 6
 numeroDia Domingo   = 7
-vienesDespues :: DiaDeSemana -> DiaDeSemana -> Bool
-vienesDespues dia1 dia2 = numeroDia dia1 >numeroDia dia2
+vieneDespues :: DiaDeSemana -> DiaDeSemana -> Bool
+vieneDespues dia1 dia2 = numeroDia dia1 >numeroDia dia2
 
 --d)
 estaEnElMedio :: DiaDeSemana -> Bool
@@ -231,4 +231,4 @@ sinElPrimero (_:xs) = xs
 --6.5
 splitHead ::[a] -> (a,[a])
 --Precondicion:La lista dada no debe ser vacia
-splitHead (x:xs) = (x, xs)
+splitHead (x:xs) = (elPrimero(x xs), sinElPrimero(x xs) )
