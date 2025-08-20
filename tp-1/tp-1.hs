@@ -221,9 +221,9 @@ estaVacia :: [a] ->Bool
 estaVacia [] = True
 estaVacia (_:_) = False    
 --6.3
-elPrimero :: [a] -> [a]
+elPrimero :: [a] -> a
 --Precondicion: la lista dada debe tener al menos un elemento
-elPrimero (x:_) =[x]
+elPrimero (x:_) = x
 --6.4
 sinElPrimero ::[a] -> [a]
 --Precondicion:La lista dada no debe ser vacia
