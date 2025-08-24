@@ -116,7 +116,45 @@ elMinimo :: Ord a => [a] -> a
 elMinimo [x]    = x
 elMinimo (x:xs) = min x (elMinimo xs)
 
+{-
+    2 - Resursión sobre numeros
+-}
 
+--2.1
+factorial :: Int -> Int
+factorial 0 = 1
+factorial x = x * factorial(x-1)
 
+--2.2
+cuentaRegresiva :: Int -> [Int]
+cuentaRegresiva n = if n >= 1
+                       then n : cuentaRegresiva (n-1)
+                       else [] 
+
+--2.3
+repetir :: Int -> a -> [a]
+repetir n e = if n >=1
+              then e: repetir (n-1) e
+              else []
+
+--2.4
+{-
+    Dados un número n y una lista xs, devuelve una lista con los n primeros elementos de xs.
+    Si la lista es vacía, devuelve una lista vacía 
+-}
+losPrimeros :: Int -> [a] -> [a]
+losPrimeros 0 _     =  []
+losPrimeros _ []     = [] 
+losPrimeros n (x:xs) = x : losPrimeros(n-1) xs
+
+--2.5 
+{-
+    Dados un número n y una lista xs, devuelve una lista sin los primeros n elementos de lista
+    recibida. Si n es cero, devuelve la lista completa. 
+-}
+sinLosPrimeros :: Int -> [a] -> [a]
+sinLosPrimeros 0 xs     = xs
+sinLosPrimeros _ []     = []
+sinLosPrimeros n (x:xs) = sinLosPrimeros (n-1) xs
 
 
