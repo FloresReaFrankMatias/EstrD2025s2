@@ -109,7 +109,8 @@ negar _     = False
 
 --b)
 implica :: Bool -> Bool -> Bool
-implica b1 b2 =  oBien (not b1) b2 
+implica True b   = b
+implica False _  = True 
 
 --c)
 yTambien :: Bool -> Bool -> Bool
