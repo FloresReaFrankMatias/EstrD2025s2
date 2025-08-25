@@ -180,16 +180,21 @@ superaA (Pokemon t _) (Pokemon t2 _) =
 
 cantidadDePokemonDe :: TipoDePokemon -> Entrenador -> Int
 cantidadDePokemonDe tipo (Entrenador _ p1 p2) =
-    contarSiEsTipo tipo p1 + contarSiEsTipo tipo p2
+    unoSiEsMismoTipo tipo p1 + unoSiEsMismoTipo tipo p2
 
-contarSiEsTipo :: TipoDePokemon -> Pokemon -> Int
-contarSiEsTipo Agua   (tipoDePokemon p)   = 1
-contarSiEsTipo Fuego  (tipoDePokemon p)  = 1
-contarSiEsTipo Planta (tipoDePokemon p) = 1
-contarSiEsTipo _      _                  = 0
+unoSiEsMismoTipo :: TipoDePokemon -> Pokemon -> Int
+unoSiEsMismoTipo t1 (Pokemon t2 _ ) = 
+    if esMismoTipo t1 t2
+        then 1
+        else 0
 
-tipoDePokemon :: Pokemon -> TipoPokemon
-tipoDePokemon (Pokemon t _) = t
+esMismoTipo :: TipoDePokemon -> TipoDePokemon -> Bool
+esMismoTipo Fuego Fuego   = True
+esMismoTipo Planta Planta = True
+esMismoTipo Agua Agua     = True
+esMismoTipo _ _           = False
+
+
 
 juntarPokemon :: (Entrenador, Entrenador) -> [Pokemon]
 juntarPokemon (Entrenador _ p1 p2,Entrenador _ p3 p4)= [p1,p2,p3,p4]
