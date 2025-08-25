@@ -105,23 +105,22 @@ estaEnElMedio d = case d of
 --a)
 negar :: Bool -> Bool
 negar False = True
-negar _= False
+negar _     = False
 
 --b)
 implica :: Bool -> Bool -> Bool
-implica True False = False
-implica _ _ = True
+implica b1 b2 =  oBien (not b1) b2 
 
 --c)
 yTambien :: Bool -> Bool -> Bool
-yTambien True True = True
-yTambien _ _       = False
+yTambien True b  = b
+yTambien False _ = False
+
 
 --d)
 oBien :: Bool -> Bool -> Bool
-oBien True _= True 
-oBien _ True = True
-oBien _ _ = False
+oBien True _ = True 
+oBien _ b    = b
 
 
 {- 
