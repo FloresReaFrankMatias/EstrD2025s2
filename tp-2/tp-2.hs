@@ -157,4 +157,151 @@ sinLosPrimeros 0 xs     = xs
 sinLosPrimeros _ []     = []
 sinLosPrimeros n (x:xs) = sinLosPrimeros (n-1) xs
 
+{-
+    3. Registros
+-}
+--3.1 Personas
+data Persona = P String Int
+    deriving Show
+
+mayoresA :: Int -> [Persona] -> [Persona]
+mayoresA 0 _      = []
+mayoresA _ []     = []
+mayoresA n (x:xs) = listaDePersonaSiSinoNil x (edad x > n) ++ mayoresA n xs
+
+listaDePersonaSiSinoNil :: Persona -> Bool -> [Persona]
+listaDePersonaSiSinoNil p True  = [p]
+listaDePersonaSiSinoNil p False = []
+
+
+{-
+    Dada una lista de p ersonas devuelve el promedio de edad entre esas p ersonas. Precon-
+    dición : la lista al menos p osee una p ersona.
+-}
+promedioEdad :: [Persona] -> Int
+promedioEdad xs = div (sumatoriaDeEdades xs) (longitud xs)
+
+sumatoriaDeEdades :: [Persona] -> Int
+sumatoriaDeEdades []     = 0
+sumatoriaDeEdades (x:xs) = edad x + sumatoriaDeEdades xs
+
+edad :: Persona -> Int
+edad (P _ e)= e
+
+
+{-
+    Dada una lista de p ersonas devuelve la p ersona más vieja de la lista. Precondición : la
+    lista al menos p osee una p ersona
+-}
+elMasViejo :: [Persona] -> Persona
+elMasViejo [x]    = x
+elMasViejo (x:xs) = personaSiSino x (edad x > edad (elMasViejo xs)) (elMasViejo xs)
+
+personaSiSino :: Persona -> Bool -> Persona -> Persona
+personaSiSino p1 True  p2 = p1
+personaSiSino p1 False p2 = p2
+
+--3.2 Pokemones
+data TipoDePokemon = Agua | Fuego | Planta
+        deriving Show
+data Pokemon = ConsPokemon TipoDePokemon Int
+        deriving Show
+data Entrenador = ConsEntrenador String [Pokemon]
+        deriving Show
+
+--Devuelve la cantidad de Pokémon que posee el entrenador.
+cantPokemon :: Entrenador -> Int
+cantPokemon ( ConsEntrenador n p) = sumatoriaDePokemones p
+
+sumatoriaDePokemones :: [Pokemon] -> Int
+sumatoriaDePokemones []     = 0
+sumatoriaDePokemones (p:ps) = 1 + sumatoriaDePokemones ps
+
+
+cantPokemonDe :: TipoDePokemon -> Entrenador -> Int
+-- Devuelve la cantidad de Pokémon de determinado tip o que p osee el entrenador
+cantPokemonDe t (ConsEntrenador n p) = sumatoriaDePokemonesDe t p
+
+sumatoriaDePokemonesDe :: TipoDePokemon -> [Pokemon] -> Int
+sumatoriaDePokemonesDe t []     = 0
+sumatoriaDePokemonesDe t (p:ps) =  unoSiPokemonEsTipo_CeroSino t p + sumatoriaDePokemonesDe t ps
+
+unoSiPokemonEsTipo_CeroSino :: TipoDePokemon -> Pokemon -> Int
+unoSiPokemonEsTipo_CeroSino t (ConsPokemon tp e)  = unoSiTipoEsMismoTipoQue t tp
+
+unoSiTipoEsMismoTipoQue :: TipoDePokemon -> TipoDePokemon -> Int
+unoSiTipoEsMismoTipoQue Agua   Agua   = 1
+unoSiTipoEsMismoTipoQue Fuego  Fuego  = 1
+unoSiTipoEsMismoTipoQue Planta Planta = 1
+unoSiTipoEsMismoTipoQue _      _      = 0
+
+----------------------------------------------------------------------------------------
+--3.3 Roles
+----------------------------------------------------
+data Seniority = Junior | SemiSenior | Senior
+        deriving Show
+data Proyecto = ConsProyecto String
+        deriving Show
+data Rol = Developer Seniority Proyecto | Management Seniority Proyecto
+        deriving Show
+data Empresa = ConsEmpresa [Rol]
+        deriving Show
+--------------------------------------------------
+{-
+    Dada una empresa denota la lista de proyectos en los que trabaja, sin elementos repetidos.
+-}
+proyectos :: Empresa -> [Proyecto]
+proyectos (ConsEmpresa rs) = proyectosDeDiferentesRoles rs
+--Dado una lista de roles describe la lista de proyectos sin repetir
+proyectosDeDiferentesRoles :: [Rol] -> [Proyecto]
+proyectosDeDiferentesRoles [] =[]
+proyectosDeDiferentesRoles (r:rs) = agregarProyectoSiNoExiste (proyecto r) (proyectosDeDiferentesRoles rs)
+
+--Dado un rol describe su proyecto
+proyecto :: Rol -> Proyecto
+proyecto (Developer _ p1)  = p1
+proyecto (Management _ p2) = p2
+
+--Dado un proyecto y uan lista de proyecto describe una lista de proyectos diferentes
+agregarProyectoSiNoExiste :: Proyecto -> [Proyecto]-> [Proyecto]
+agregarProyectoSiNoExiste p [] = [p]
+agregarProyectoSiNoExiste p (pr:prs) =
+    if esElMismoProyecto p pr
+        then pr : prs
+        else pr : agregarProyectoSiNoExiste p prs 
+--Dado 2 proyectos describe si son iguales
+esElMismoProyecto :: Proyecto ->Proyecto -> Bool 
+esElMismoProyecto (ConsProyecto p) (ConsProyecto p2)= p == p2
+--------
+
+{-
+    Dada una empresa indica la cantidad de desarrolladores senior que p osee, que p ertecen
+    además a los proyectos dados por parámetro
+-}
+
+losDevSenior :: Empresa -> [Proyecto] -> Int
+losDevSenior (ConsEmpresa rs) ps  = cantidadDeDevSeniorEn rs ps 
+
+--Dado una lista de roles y de proyectos denota cantidad de dev seniors
+cantidadDeDevSeniorEn :: [Rol] ->[Proyecto] -> Int
+cantidadDeDevSeniorEn []     ps = 0
+cantidadDeDevSeniorEn (r:rs) ps = 
+    if esSenior (seniorityDe r) && perteneceAAlgunProyecto r ps
+        then 1 + cantidadDeDevSeniorEn rs ps
+        else cantidadDeDevSeniorEn rs ps
+
+--Dado un rol denota su seniority
+seniorityDe :: Rol -> Seniority
+seniorityDe (Developer s _)  = s
+seniorityDe (Management s _) = s
+
+--Dado un senority denota si es Senior
+esSenior :: Seniority -> Bool 
+esSenior Senior = True
+esSenior _ = False
+
+--Dado un rol y una lista de proyectos denota si el rol pertenece a alguno de los proyectos de la lista dada
+perteneceAAlgunProyecto :: Rol -> [Proyecto] -> Bool
+perteneceAAlgunProyecto  r []    = False
+perteneceAAlgunProyecto r (p:ps) = esElMismoProyecto (proyecto r) p || perteneceAAlgunProyecto r ps
 
