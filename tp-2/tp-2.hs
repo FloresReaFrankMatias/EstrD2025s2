@@ -3,6 +3,13 @@
     1-Recursión sobre listas
 -}
 -- 1.1 
+
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use camelCase" #-}
+{-# HLINT ignore "Use foldr" #-}
+{-# HLINT ignore "Use map" #-}
+{-# HLINT ignore "Use newtype instead of data" #-}
+{-# HLINT ignore "Eta reduce" #-}
 sumatoria :: [Int] -> Int
 sumatoria [] = 0
 sumatoria (n:ns) = n + sumatoria ns
@@ -202,13 +209,14 @@ personaSiSino p1 True  p2 = p1
 personaSiSino p1 False p2 = p2
 
 --3.2 Pokemones
+---------------------------------------
 data TipoDePokemon = Agua | Fuego | Planta
         deriving Show
 data Pokemon = ConsPokemon TipoDePokemon Int
         deriving Show
 data Entrenador = ConsEntrenador String [Pokemon]
         deriving Show
-
+-----------------------------------------
 --Devuelve la cantidad de Pokémon que posee el entrenador.
 cantPokemon :: Entrenador -> Int
 cantPokemon ( ConsEntrenador n p) = sumatoriaDePokemones p
@@ -224,16 +232,70 @@ cantPokemonDe t (ConsEntrenador n p) = sumatoriaDePokemonesDe t p
 
 sumatoriaDePokemonesDe :: TipoDePokemon -> [Pokemon] -> Int
 sumatoriaDePokemonesDe t []     = 0
-sumatoriaDePokemonesDe t (p:ps) =  unoSiPokemonEsTipo_CeroSino t p + sumatoriaDePokemonesDe t ps
+sumatoriaDePokemonesDe t (p:ps) =  unoSiPokemonEsTipoCeroSino t p + sumatoriaDePokemonesDe t ps
 
-unoSiPokemonEsTipo_CeroSino :: TipoDePokemon -> Pokemon -> Int
-unoSiPokemonEsTipo_CeroSino t (ConsPokemon tp e)  = unoSiTipoEsMismoTipoQue t tp
+unoSiPokemonEsTipoCeroSino :: TipoDePokemon -> Pokemon -> Int
+unoSiPokemonEsTipoCeroSino t (ConsPokemon tp e)  = unoSiTipoEsMismoTipoQue t tp
 
 unoSiTipoEsMismoTipoQue :: TipoDePokemon -> TipoDePokemon -> Int
 unoSiTipoEsMismoTipoQue Agua   Agua   = 1
 unoSiTipoEsMismoTipoQue Fuego  Fuego  = 1
 unoSiTipoEsMismoTipoQue Planta Planta = 1
 unoSiTipoEsMismoTipoQue _      _      = 0
+{-
+    Dados dos entrenadores, indica la cantidad de Pokemon de cierto tip o pertenecientes al
+    primer entrenador, que le ganarían a todos los Pokemon del segundo entrenador
+-}
+cuantosDeTipo_De_LeGananATodosLosDe_:: TipoDePokemon -> Entrenador -> Entrenador -> Int
+
+cuantosDeTipo_De_LeGananATodosLosDe_  t (ConsEntrenador _ ps1) (ConsEntrenador _ ps2) = pokemonsGanadoresDeTipoEntre t ps1 ps2
+
+pokemonsGanadoresDeTipoEntre :: TipoDePokemon ->[Pokemon] -> [Pokemon] -> Int
+pokemonsGanadoresDeTipoEntre t _      []  = 0
+pokemonsGanadoresDeTipoEntre t []     _   = 0
+pokemonsGanadoresDeTipoEntre t (p:ps) ps2 = unoSi ( esMismoTipo t (tipoPokemonDe p) && superaATodos p ps2  ) 
+                                                       + pokemonsGanadoresDeTipoEntre t ps ps2
+
+
+
+superaATodos :: Pokemon -> [Pokemon] -> Bool
+superaATodos p  []      =  True
+superaATodos p (p2:ps2) = superaA p p2 && superaATodos p ps2
+
+--Funcion del tp-1
+superaA :: Pokemon -> Pokemon -> Bool
+superaA (ConsPokemon t _) (ConsPokemon t2 _) =
+    case (t,t2) of
+        (Agua, Fuego)   -> True
+        (Fuego, Planta) -> True
+        (Planta, Agua)  -> True
+        _               -> False
+{-
+    Dado un entrenador, devuelve True si p osee al menos un Pokémon de cada tipo posible.
+-}
+
+esMaestroPokemon :: Entrenador -> Bool
+esMaestroPokemon (ConsEntrenador _ ps) = hayUnoDeCadaTipo ps
+
+
+hayUnoDeCadaTipo :: [Pokemon] -> Bool
+hayUnoDeCadaTipo [ ] = False
+hayUnoDeCadaTipo ps = tienePokemonTipo Agua ps && tienePokemonTipo Fuego  ps && tienePokemonTipo Planta ps
+
+tienePokemonTipo :: TipoDePokemon -> [Pokemon] ->Bool
+tienePokemonTipo t []      = False
+tienePokemonTipo t (p:ps ) = esMismoTipo t (tipoPokemonDe p) || tienePokemonTipo t ps
+
+--Funcion de la practica 1
+esMismoTipo :: TipoDePokemon -> TipoDePokemon -> Bool
+esMismoTipo Fuego Fuego   = True
+esMismoTipo Planta Planta = True
+esMismoTipo Agua Agua     = True
+esMismoTipo _ _           = False
+
+tipoPokemonDe :: Pokemon -> TipoDePokemon
+tipoPokemonDe (ConsPokemon t _) = t
+
 
 ----------------------------------------------------------------------------------------
 --3.3 Roles
@@ -285,10 +347,12 @@ losDevSenior (ConsEmpresa rs) ps  = cantidadDeDevSeniorEn rs ps
 --Dado una lista de roles y de proyectos denota cantidad de dev seniors
 cantidadDeDevSeniorEn :: [Rol] ->[Proyecto] -> Int
 cantidadDeDevSeniorEn []     ps = 0
-cantidadDeDevSeniorEn (r:rs) ps = 
-    if esSenior (seniorityDe r) && perteneceAAlgunProyecto r ps
-        then 1 + cantidadDeDevSeniorEn rs ps
-        else cantidadDeDevSeniorEn rs ps
+
+cantidadDeDevSeniorEn (r:rs) ps = unoSi( esDevSeniorEnAlgunProyecto r ps) + cantidadDeDevSeniorEn rs ps
+
+
+esDevSeniorEnAlgunProyecto :: Rol -> [Proyecto] -> Bool
+esDevSeniorEnAlgunProyecto r ps = esSenior (seniorityDe r) && perteneceAAlgunProyecto r ps 
 
 --Dado un rol denota su seniority
 seniorityDe :: Rol -> Seniority
@@ -304,4 +368,44 @@ esSenior _ = False
 perteneceAAlgunProyecto :: Rol -> [Proyecto] -> Bool
 perteneceAAlgunProyecto  r []    = False
 perteneceAAlgunProyecto r (p:ps) = esElMismoProyecto (proyecto r) p || perteneceAAlgunProyecto r ps
+
+
+
+{-
+    Indica la cantidad de empleados que trabajan en alguno de los proyectos dados.
+-}
+cantQueTrabajanEn :: [Proyecto] -> Empresa -> Int
+cantQueTrabajanEn ps (ConsEmpresa rs) = cantDeEmpleadosQueTrabajanEn ps rs
+
+cantDeEmpleadosQueTrabajanEn :: [Proyecto]-> [Rol] -> Int
+cantDeEmpleadosQueTrabajanEn _ [] = 0
+cantDeEmpleadosQueTrabajanEn [] _ = 0
+cantDeEmpleadosQueTrabajanEn ps (r:rs) = unoSi (perteneceAAlgunProyecto  r ps) + cantDeEmpleadosQueTrabajanEn ps rs  
+
+
+{-
+    Devuelve una lista de pares que representa a los proyectos (sin repetir) junto con su
+    cantidad de personas involucradas.
+-}
+
+asignadosPorProyecto :: Empresa -> [(Proyecto, Int)]
+asignadosPorProyecto (ConsEmpresa rs) = asignadosPorProyecto' rs
+
+
+asignadosPorProyecto' :: [Rol] -> [(Proyecto, Int)]
+asignadosPorProyecto' []     = []
+asignadosPorProyecto' (r:rs) = agregarProyectoATuplas (proyectoDeRol r) (asignadosPorProyecto' rs)
+
+agregarProyectoATuplas :: Proyecto -> [(Proyecto, Int)] -> [(Proyecto, Int)]
+agregarProyectoATuplas p []           = [(p, 1)]
+agregarProyectoATuplas p ((p', n):ts) = 
+    if esElMismoProyecto p p'
+        then (p', n+1):ts
+        else (p',n) : agregarProyectoATuplas p ts
+
+
+proyectoDeRol ::  Rol ->  Proyecto
+proyectoDeRol (Developer _ p) = p
+proyectoDeRol (Management _ p) = p
+
 
