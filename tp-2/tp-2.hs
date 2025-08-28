@@ -31,7 +31,7 @@ conjuncion (b:bs) = b && conjuncion bs
 
 --1.5
 disyuncion :: [Bool] -> Bool
-disyuncion []     = True
+disyuncion []     = False
 disyuncion (b:bs) = b || disyuncion bs
 
 --1.6
@@ -69,12 +69,10 @@ listaDeNumeroSiSinoNil ns False n = []
 {-Dados un número n y una lista de listas, devuelve la lista de aquellas listas que tienen más
 de n elementos -}
 lasDeLongitudMayorA :: Int -> [[a]] -> [[a]]
-lasDeLongitudMayorA n []     = [[]]
-lasDeLongitudMayorA n (x:xs) = listaDeElementoSiSinoNil x (longitud x > n) ++ lasDeLongitudMayorA n xs
-
-listaDeElementoSiSinoNil :: [a] -> Bool -> [[a]]
-listaDeElementoSiSinoNil x True  = [x]
-listaDeElementoSiSinoNil x False = []
+lasDeLongitudMayorA n []     = []
+lasDeLongitudMayorA n (x:xs) = if ( (longitud x) > n  )
+                               then x : lasDeLongitudMayorA n xs
+                               else lasDeLongitudMayorA n xs
 
 --1.11
 {-Dados una lista y un elemento, devuelve una lista con ese elemento agregado al final de la
