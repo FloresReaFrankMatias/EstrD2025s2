@@ -126,6 +126,39 @@ cantTesorosEntre   i f  (Cofre ob cam )  = if i<= 1 && f >= 1
 data Tree a = EmptyT | NodeT a (Tree a) (Tree a)
     deriving Show
 
+--------------------------------------------------------------------    
+ejemplo = NodeT (10 ::Int)
+              (NodeT (5 :: Int) ( NodeT (5 :: Int) EmptyT EmptyT) EmptyT     ) 
+              (NodeT (20 :: Int) (NodeT (12::Int)  EmptyT EmptyT) (NodeT (9::Int)  (NodeT (8::Int) EmptyT EmptyT) (NodeT (7::Int) EmptyT EmptyT)  ))
+
+{-
+                10
+             /        \
+           5         20
+        /            /  \
+        5           12   9
+                   /  \ 
+                   8   7             
+-}
+
+---------------------------------------------
+
+{-
+           "E"
+         /    \
+       "M"    "A"
+        \     / \
+        "O" "O" "M"
+        /
+        "S"
+-}
+
+ejemploStr =NodeT ("E" ::String)
+              --Nodo Izq
+              (NodeT ("M" :: String) ( NodeT ("O" :: String) (NodeT ("S"::String) EmptyT EmptyT) EmptyT) EmptyT  ) 
+                --Nodo Der
+              (NodeT ("A" :: String) (NodeT ("O"::String)  EmptyT EmptyT) (NodeT ("M"::String) EmptyT EmptyT ))
+------------------------------------------------------
 -- 2.1.1
 sumarT :: Tree Int -> Int
 sumarT EmptyT = 0
@@ -140,7 +173,7 @@ sizeT (NodeT a t1 t2) = 1 +  sizeT t1 + sizeT t2
 mapDobleT :: Tree Int -> Tree Int
 --Dado un árbol de enteros devuelve un árbol con el doble de cada número
 mapDobleT EmptyT          = EmptyT
-mapDobleT (NodeT n t1 t2) = NodeT (n*2) (mapDobleT  t2) (mapDobleT  t2)
+mapDobleT (NodeT n t1 t2) = NodeT (n*2) (mapDobleT  t1) (mapDobleT  t2)
 
 -- 2.1.4
 perteneceT :: Eq a => a -> Tree a -> Bool
@@ -159,6 +192,7 @@ unoSi False = 0
 
 -- 2.1.6
 leaves :: Tree a -> [a]
+leaves EmptyT = []
 leaves (NodeT x EmptyT EmptyT) = [x]
 leaves (NodeT x n1 n2)         = singularSi x (esHoja n1 n2)  ++ leaves n1 ++ leaves n2
 
@@ -175,6 +209,7 @@ esHoja _      _      = False
 heightT :: Tree a -> Int
 heightT EmptyT          = 0
 heightT (NodeT x n1 n2) = 1 + 1 + max (heightT n1) (heightT n2)
+
 
 
 -- 2.1.8
@@ -205,6 +240,7 @@ juntarNiveles  (xs:xss) (ys:yss) = (xs ++ ys) : juntarNiveles xss yss
 
 -- 2.1.12
 ramaMasLarga :: Tree a -> [a]
+ramaMasLarga EmptyT = []
 ramaMasLarga (NodeT x n1 n2) = if heightT n1 > heightT n2
                                   then x : ramaMasLarga n1
                                   else x : ramaMasLarga n2                 
@@ -228,6 +264,12 @@ consACada    x    (xs:xss) = (x:xs) : consACada x xss
 data ExpA = Valor Int | Sum ExpA ExpA | Prod ExpA ExpA | Neg ExpA
     deriving Show
 
+expresionA1 = Sum (Prod (Valor 2) (Valor 25) ) 
+                 (Prod(Valor 1) (Neg  (Neg (Valor 5)) ) )
+expresionA2 = Prod ( Sum (Valor 10) (Valor 10) )
+                    (Prod  (Valor 5) (Valor 6)  )
+
+
 --2.2.1
 eval :: ExpA -> Int  
 eval (Valor n)    = n
@@ -238,6 +280,7 @@ eval (Neg e1 )    = eval e1 * (-1)
 --2.2.2
 --------------------------------
 simplificar :: ExpA -> ExpA
+simplificar (Valor n)    = Valor n
 simplificar (Sum e1 e2)  = simplificarSum  (simplificar e1) (simplificar e2)
 simplificar (Prod e1 e2) = simplificarProd (simplificar e1) (simplificar e2)
 simplificar (Neg e1)     = simplificarNeg (simplificar e1)        
