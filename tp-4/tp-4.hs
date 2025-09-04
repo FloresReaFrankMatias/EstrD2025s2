@@ -9,25 +9,29 @@ data Pizza       = Prepizza      | Capa Ingrediente Pizza
     deriving Show
 data Ingrediente = Salsa | Queso | Jamon | Aceitunas Int
     deriving Show
---Pizzas ejemplos
+-------------------Pizzas ejemplos--------------------------------
 pizza0 = Prepizza
 pizza1 = Capa Salsa Prepizza
 pizza2 = Capa Queso (Capa Salsa Prepizza)
 pizza3 = Capa (Aceitunas 8)
                            (Capa Queso (Capa Salsa Prepizza))
 pizza4 = Capa Jamon (Capa Queso Prepizza)
-
-
+-------------------------------------------------------
+--1.1
 cantidadDeCapas :: Pizza -> Int
 
 cantidadDeCapas Prepizza   = 0
 cantidadDeCapas (Capa i p) = 1 + cantidadDeCapas p    
 
 ingrs = [Salsa, Queso, Jamon]
+
+--1.2
 armarPizza :: [Ingrediente] -> Pizza
 armarPizza  []  = Prepizza 
 armarPizza  (i:is)  = (Capa i (armarPizza is)) 
-{-
+
+
+--
 sacarJamon :: Pizza -> Pizza
 sacarJamon  Prepizza  = Prepizza
 sacarJamon (Capa i p) = if esJamon i
@@ -37,7 +41,7 @@ sacarJamon (Capa i p) = if esJamon i
  esJamon :: Ingrediente -> Bool
  esJamon Jamon = True 
  esJamon _     = False
---}
+
                         
 tieneSoloSalsaYQueso :: Pizza -> Bool 
 tieneSoloSalsaYQueso Prepizza   = True
@@ -54,10 +58,6 @@ duplicarAceitunas Prepizza    = Prepizza
 duplicarAceitunas (Capa i p ) = (Capa (duplicarAceitunasSi i) 
                                        (duplicarAceitunas p) 
                                  )
-
-
-
-
 duplicarAceitunasSi :: Ingrediente -> Ingrediente
 duplicarAceitunasSi (Aceitunas n) = (Aceitunas (n*2))
 duplicarAceitunasSi ing           = ing
