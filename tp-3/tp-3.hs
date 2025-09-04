@@ -208,13 +208,13 @@ esHoja _      _      = False
 -- 2.1.7
 heightT :: Tree a -> Int
 heightT EmptyT          = 0
-heightT (NodeT x n1 n2) = 1 + 1 + max (heightT n1) (heightT n2)
+heightT (NodeT x n1 n2) = 1 +  max (heightT n1) (heightT n2)
 
 
 
 -- 2.1.8
 mirrorT :: Tree a -> Tree a
-mirrorT (NodeT x n1 n2 )  =  NodeT x n2 n1 
+mirrorT (NodeT x n1 n2 )  =  (NodeT x (mirror n1 ) (mirror n2) )    
 
 -- 2.1.9
 toList :: Tree a -> [a]
