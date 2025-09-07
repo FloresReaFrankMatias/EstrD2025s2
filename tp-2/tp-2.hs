@@ -70,7 +70,7 @@ listaDeNumeroSiSinoNil ns False n = []
 de n elementos -}
 lasDeLongitudMayorA :: Int -> [[a]] -> [[a]]
 lasDeLongitudMayorA n []     = []
-lasDeLongitudMayorA n (x:xs) = if ( (longitud x) > n  )
+lasDeLongitudMayorA n (x:xs) = if  longitud x > n  
                                then x : lasDeLongitudMayorA n xs
                                else lasDeLongitudMayorA n xs
 
@@ -118,6 +118,8 @@ primerNumeroSiSinoElSegundo n False m = m
 --1.15 Dada una lista devuelve el mínimo
 
 elMinimo :: Ord a => [a] -> a
+--Precondicion: La lista debe tener al menos un elemento
+elMinimo []     = error "La lista no debe ser vacia"
 elMinimo [x]    = x
 elMinimo (x:xs) = min x (elMinimo xs)
 
