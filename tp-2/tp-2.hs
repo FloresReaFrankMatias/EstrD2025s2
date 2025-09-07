@@ -166,9 +166,14 @@ sinLosPrimeros n (x:xs) = sinLosPrimeros (n-1) xs
     3. Registros
 -}
 --3.1 Personas
+--------------------------------------------
 data Persona = P String Int
     deriving Show
 
+per1= P "matias" 20
+per2 = P "juan" 22
+
+--------------------------
 mayoresA :: Int -> [Persona] -> [Persona]
 mayoresA 0 _      = []
 mayoresA _ []     = []
@@ -199,12 +204,15 @@ edad (P _ e)= e
     lista al menos p osee una p ersona
 -}
 elMasViejo :: [Persona] -> Persona
-elMasViejo [x]    = x
-elMasViejo (x:xs) = personaSiSino x (edad x > edad (elMasViejo xs)) (elMasViejo xs)
+--Precondicion: La lsita debe tener al menos una persona
+elMasViejo [p]    = p
+elMasViejo (p:ps) = if edad p > edadDe (elMasViejo ps)
+                    then p
+                    else elMasViejo ps
 
-personaSiSino :: Persona -> Bool -> Persona -> Persona
-personaSiSino p1 True  p2 = p1
-personaSiSino p1 False p2 = p2
+
+edadDe :: Persona -> Int
+edadDe (P _ e) = e
 
 --3.2 Pokemones
 ---------------------------------------
