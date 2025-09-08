@@ -285,8 +285,42 @@ asignarTripulanteA tr ids (N ts) = N (asignarTripulanteA' tr ids ts)
 
 -- (Funcion auxiliar) Propósito: Incorpora un tripulante a una lista de sectores del árbol de sectores.
 asignarTripulanteA' :: Tripulante -> [SectorId] -> Tree Sector -> Tree Sector 
-asignarTripulanteA' _ _ EmptyT = EmptyT
-asignarTripulanteA'
+asignarTripulanteA' _ _ EmptyT            = EmptyT
+asignarTripulanteA' t sid (NodeT s t1 t2) = if (esSectorAAsignar s sid)
+                                            then (NodeT (asignarTripulanteSector  t s) 
+                                                        (asignarTripulanteA' t sid t1)
+                                                        (asignarTripulanteA' t sid t2) 
+                                                   )
+                                            else (NodeT s (asignarTripulanteA' t sid t1) 
+                                                          (asignarTripulanteA' t sid t2 )
+                                                 )       
+
+
+esSectorAAsignar :: Sector -> [SectorId] -> Bool 
+esSectorAAsignar (S id _ _) ids = esSectorAAsignar' id ids
+
+esSectorAAsignar' :: SectorId -> [SectorId] -> Bool
+esSectorAAsignar' _    []      = False
+esSectorAAsignar' sid (id:ids) = sid== id || esSectorAAsignar' sid ids
+
+
+asignarTripulanteSector :: Tripulante ->  Sector
+asignarTripulanteSector t (S id cs ts) = S id cs (t:ts)
+
+
+--3.6
+
+sectoresAsignados :: Tripulante -> Nave -> [SectorId]
+--Propósito: Devuelve los sectores en donde aparece un tripulante dado.
+sectoresAsignados t (N ts) = sectoresAsignados' t ts
+
+sectoresAsignados' :: Tripulante -> Tree Sector -> [SectorId]
+sectoresAsignados' _ EmptyT          = []
+sectoresAsignados' t (NodeT s t1 t2) = if estaAsignado t S
+                                       then sectorIdDe s: sectoresAsignados' t t1 ++ sectoresAsignados' t t2
+                                       else sectoresAsignados' t t1 ++ sectoresAsignados' t t2 
+
+
 
 
 --3.7
@@ -296,7 +330,7 @@ tripulantes (N t) = tripulantesSinRepetir (tripulantesDeNave t)
 tripulantesDeNave :: Tree Sector -> [Tripulante]
 tripulantesDeNave EmptyT           = []
 tripulantesDeNave (NodeT s t1 t2) = tripulantesDeSector s ++ 
-                                        tripulantesDeNave t1 ++
+                                         tripulantesDeNave t1 ++
                                         tripulantesDeNave t2
 
 tripulantesDeSector :: Sector -> [Tripulante]
@@ -305,9 +339,9 @@ tripulantesDeSector (S _ _ tps) = tps
 
 tripulantesSinRepetir :: [Tripulante] -> [Tripulante]
 tripulantesSinRepetir      []      = []
-tripulantesSinRepetir (tp:tps) = if pertenece tp tps
-                               then tripulantesSinRepetir tps
-                              else tp : tripulantesSinRepetir tps
+tripulantesSinRepetir (tp:tps) = if   pertenece tp tps
+                                 then tripulantesSinRepetir tps
+                                 else tp : tripulantesSinRepetir tps
 
 
 
@@ -315,6 +349,137 @@ tripulantesSinRepetir (tp:tps) = if pertenece tp tps
 pertenece :: Eq a => a -> [a] -> Bool
 pertenece e []     = False
 pertenece e (x:xs) = e == x || pertenece e xs 
+
+
+
+----------------------------------------------------------------------
+
+{-
+    4-  MANADA DE LOBOS
+
+-}
+
+
+
+manada1= M ( Cazador "Simon" ["tito", "pepe"]
+                 loboExp
+                 cria1
+                 cria2         
+          )     
+
+loboExp = Explorador "Predator" ["bosque", "rios"]
+                      cria3
+                      cria4
+
+cria1 = "firu"
+cria2 = "cria2"
+cria3 = "cria3"
+cria = "cria4"
+
+-------------------------------------------------------------------------------
+
+
+type Presa = String -- nombre de presa
+type Territorio = String -- nombre de territorio
+type Nombre = String -- nombre de lobo
+data Lobo = Cazador Nombre [Presa] Lobo Lobo Lobo
+            | Explorador Nombre [Territorio] Lobo Lobo
+            | Cría Nombre
+     deriving Show       
+data Manada = M Lobo
+     deriving Show
+
+
+--4.2
+buenaCaza :: Manada -> Bool
+buenaCaza m  = alimentoCazado m > cantidadDeCrias m 
+
+alimentoCazado :: Manada -> Int
+alimentoCazado (M l) = alimentoCazado' l
+
+
+alimentoCazado' :: Lobo -> Int
+alimentoCazado' (Cria _)                = 0
+alimentoCazado' (Explorador _ _ l1 l2)  = alimentoCazado' l1 + alimentoCazado' l2
+alimentoCazado' (Cazador _ ps l1 l2 l3) = alimentoEn ps +
+                                          alimentoCazado' l1 + 
+                                          alimentoCazado' l2 +
+                                          alimentoCazado' l3
+
+
+alimentoEn :: [Presas] -> Int
+alimentoEn ps = length ps
+
+cantidadDeCrias :: Manada -> Int
+cantidadDeCrias (M l) = cantidadDeCrias' l
+
+cantidadDeCrias' :: Lobo -> Int
+cantidadDeCrias' (Cria _)                 = 0
+cantidadDeCrias' (Explorador _ _ l1 l2 )  = cantidadDeCrias' l1 
+                                            + cantidadDeCrias' l2 
+cantidadDeCrias' (Cazador _ _ _ l1 l2 l3) = cantidadDeCrias'l1 +
+                                            cantidadDeCrias'l2 + 
+                                            cantidadDeCrias'l3
+
+
+esCria :: Lobo -> Bool
+esCria Cria = True
+esCria _    = False
+
+
+---------------------------------
+--4.3
+elAlfa ::Manada -> (Nombre, Int)
+{-
+     Propósito: dada una manada, devuelve el nombre del lobo con más presas cazadas, junto
+     con su cantidad de presas. Nota: se considera que los exploradores y crías tienen cero presas
+     cazadas, y que podrían formar parte del resultado si es que no existen cazadores con más de
+     cero presas
+--}
+
+
+----------------------------
+--4.4
+losQueExploraron :: Territorio -> Manada -> [Nombre]
+losQueExploraron t (M l) = losQueExploraronL t l
+
+
+losQueExploraronL :: Territorio -> Lobo  -> [Nombre]
+losQueExploraronL t (Cria _)                = []
+losQueExploraronL t (Cazador _ _ l1 l2 l3)  = losQueExploraronL t l1 
+                                              ++ losQueExploraronL t l2
+                                              ++ losQueExploraronL t l3
+losQueExploraronL t (Explorador n ts l1 l2) = if esTerritorioExplorado t ts
+                                              then n : losQueExploraronL t l1 ++ losQueExploraronL t l2
+                                              else losQueExploraronL t l1 ++ losQueExploraronL t l2
+  
+
+esTerritorioExplorado :: Territorio -> [Territorio] -> Bool 
+esTerritorioExplorado _ []       = False
+esTerritorioExplorado t (ts:tss) = t == ts || esTerritorioExplorado t tss 
+
+----------------------------------
+--4.5
+
+
+-------------------------------
+--4.6
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ---anotaciones  (Borrar despues)--------------
