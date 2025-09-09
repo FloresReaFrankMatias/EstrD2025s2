@@ -429,15 +429,55 @@ esCria _    = False
 
 ---------------------------------
 --4.3
-elAlfa ::Manada -> (Nombre, Int)
 {-
      Propósito: dada una manada, devuelve el nombre del lobo con más presas cazadas, junto
      con su cantidad de presas. Nota: se considera que los exploradores y crías tienen cero presas
      cazadas, y que podrían formar parte del resultado si es que no existen cazadores con más de
      cero presas
 --}
+elAlfa ::Manada -> (Nombre, Int)
+elAfa (M l) = elAlfaDe l
+
+elAlfaDe :: Lobo -> (Nombre,Int)
+elAlfaDe (Cria n)                =
+elAlfaDe (Explorador n _ l1 l2)  =
+elAlfaDe (Cazador n ps l1 l2 l3) = elAlfaEntre ( elAlfaEntre (n (cantPresas ps))  elAlfaDe l1 )
+                                               ( elAlfaEntre ( elAlfaDe l2 )     ( elAlfaDe l3) )
+
+elAlfaEntre :: (Nombre ,Int) -> (Nombre ,Int) -> (Nombre ,Int)
+elAlfaEntre   (nom1 , n1) (nom2, n2) = if n1 > n2
+                                       then (nom1, n1)
+                                       else (nom2, n2) 
 
 
+cantPresas :: [Presa] -> Int
+cantPresas []     = 0
+cantPresas (p:ps) = 1 + cantPresas ps    
+
+
+manadaEj =
+Cazador "DienteFiloso" ["Búfalos", "Antílopes"] 
+   (Cría "Hopito")
+   (Explorador "Incansable" ["Oeste hasta el río"]
+       (Cría "MechónGris")
+       (Cría "Rabito")
+   )
+   (Cazador "Garras" ["Antílopes", "Ciervos"]
+       (Explorador "Zarpado" ["Bosque este"]
+           (Cría "Osado")
+           (Cazador "Mandíbulas" ["Cerdos", "Pavos"]
+               (Cría "Desgreñado")
+               (Cría "Malcriado")
+               (Cazador "TrituraHuesos" ["Conejos"]
+                   (Cría "Peludo")
+                   (Cría "Largo")
+                   (Cría "Menudo")
+               )
+           )
+        ) 
+       (Cría "Garrita")
+       (Cría "Manchas")
+)
 ----------------------------
 --4.4
 losQueExploraron :: Territorio -> Manada -> [Nombre]
