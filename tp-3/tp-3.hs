@@ -79,6 +79,7 @@ pasosHastaTesoro (Cofre objs c) = if hayTesoroEnLosObjetos objs
 ---------------------------------------
 hayTesoroEn :: Int -> Camino -> Bool
 hayTesoroEn n Fin             = False
+hayTesoroEn 0 (Nada _)        = False
 hayTesoroEn n (Nada cam)      = hayTesoroEn (n-1) cam
 hayTesoroEn n (Cofre obj cam) = if n == 0
                                    then hayTesoroEnLosObjetos obj
