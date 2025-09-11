@@ -193,7 +193,6 @@ unoSi False = 0
 -- 2.1.6
 leaves :: Tree a -> [a]
 leaves EmptyT = []
-leaves (NodeT x EmptyT EmptyT) = [x]
 leaves (NodeT x n1 n2)         = singularSi x (esHoja n1 n2)  ++ leaves n1 ++ leaves n2
 
 singularSi :: a -> Bool -> [a]
@@ -215,7 +214,7 @@ heightT (NodeT x n1 n2) = 1 +  max (heightT n1) (heightT n2)
 -- 2.1.8
 mirrorT :: Tree a -> Tree a
 mirrorT EmptyT            = EmptyT
-mirrorT (NodeT x n1 n2 )  =  (NodeT x (mirrorT n2) (mirrorT n1) )    
+mirrorT (NodeT x n1 n2 )  =  NodeT x (mirrorT n2) (mirrorT n1)     
 
 -- 2.1.9
 toList :: Tree a -> [a]
