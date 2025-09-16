@@ -98,7 +98,12 @@ orderar xs =
     let m = minimo xs
         in m : ordenar (sacar m xs)
 
- ----------------------------------
+
+
+
+ ----------------        SET   ------------------
+
+
 losQuePertenecen :: Eq a => [a] -> Set a -> [a]
 losQuePertenecen [] _     = []
 losQuePertenecen (x:xs) s = if belongs x s 
@@ -120,3 +125,62 @@ data Tree a = EmptyT | NodeT a (Tree a) (Tree a)
 unirTodos :: Eq a => Tree (Set a) -> Set a
 unirTodos EmptyT           = emptyS 
 unirTodos (NodetT s t1 t2) = unirTodos(unionS (unirTodos t1) ( unirTodos t2))
+
+
+
+
+---------------------     QUEUE             ------------------
+  ---------------------------- INTERFAZ     ------------------------------
+
+--emptyQ :: Queue a
+  --Crea una cola vacía.
+
+--isEmptyQ :: Queue a -> Bool
+  --Dada una cola indica si la cola está vacía.
+
+--enqueue :: a -> Queue a -> Queue a
+   --Dados un elemento y una cola, agrega ese elemento a la cola.
+
+--firstQ :: Queue a -> a
+   --Dada una cola devuelve el primer elemento de la cola.
+
+--dequeue :: Queue a -> Queue a
+    --Dada una cola la devuelve sin su primer elemento
+-------------------------------------------------------------
+
+
+lengthQ :: Queue a -> Int
+lengthQ q = if isEmptyQ q 
+            then 0
+            else 1 + (lengthQ (dequeue q)) 
+
+
+
+queueToList ::  Queue a -> [a]
+queueToList q = if isEmptyQ Q
+                then []
+                else firtsQ q : queueToList (dequeue q )
+
+
+
+unionQ :: Queue a -> Queue a -> Queue a
+unionQ q1 q2 = if isEmptyQ q1
+               then q2 
+               else enqueue (firstQ q1) (unionQ (dequeue q1) q2 )
+
+
+------------------------      SET      --------------------------------------
+
+apilar :: [a] -> Stack a
+apilar []     = emptyS
+apilar (x:xs) = push x (apilar xs)
+
+
+desapilar :: Stack a -> [a]
+
+desapilar s = if isEmptyS s 
+              then []
+              else top s : desapilar (pop s) 
+
+
+
