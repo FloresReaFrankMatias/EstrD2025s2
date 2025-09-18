@@ -4,6 +4,7 @@
 
 import Set 
 import Queue  
+import Stack
 {-
     1.CALCULO DE COSTOS
 -}
@@ -103,7 +104,7 @@ orderar xs =
 
  ----------------        SET   ------------------
 
-
+--Costo :O(n)
 losQuePertenecen :: Eq a => [a] -> Set a -> [a]
 losQuePertenecen [] _     = []
 losQuePertenecen (x:xs) s = if belongs x s 
@@ -111,10 +112,11 @@ losQuePertenecen (x:xs) s = if belongs x s
                             else losQuePertenecen xs s     
 
 
-
+--Costo: O()
 sinRepetidos ::  Eq a => [a] -> [a]
 sinRepetidos xs = setToList (sinRepetidosS xs)
 
+--Costo: O()
 sinRepetidosS :: Eq a => [a] -> Set a
 sinRepetidosS []     = emptyS 
 sinRepetidosS (x:xs) = addS x (sinRepetidosS xs)
@@ -131,53 +133,56 @@ unirTodos (NodetT s t1 t2) = unirTodos(unionS (unirTodos t1) ( unirTodos t2))
 
 ---------------------     QUEUE             ------------------
   ---------------------------- INTERFAZ     ------------------------------
-
+--Costo: O(1)
 --emptyQ :: Queue a
   --Crea una cola vacía.
 
+--Costo: O(1)
 --isEmptyQ :: Queue a -> Bool
   --Dada una cola indica si la cola está vacía.
 
+--Costo: O(n)
 --enqueue :: a -> Queue a -> Queue a
    --Dados un elemento y una cola, agrega ese elemento a la cola.
 
+--Costo: O(1)
 --firstQ :: Queue a -> a
    --Dada una cola devuelve el primer elemento de la cola.
 
+--Costo: O(1)
 --dequeue :: Queue a -> Queue a
     --Dada una cola la devuelve sin su primer elemento
 -------------------------------------------------------------
 
-
+--Costo: O(n)
 lengthQ :: Queue a -> Int
 lengthQ q = if isEmptyQ q 
             then 0
             else 1 + (lengthQ (dequeue q)) 
 
 
-
+--Costo: O(n^2)
 queueToList ::  Queue a -> [a]
 queueToList q = if isEmptyQ Q
                 then []
                 else firtsQ q : queueToList (dequeue q )
 
 
-
+--Costo: O(n^2)
 unionQ :: Queue a -> Queue a -> Queue a
 unionQ q1 q2 = if isEmptyQ q1
                then q2 
                else enqueue (firstQ q1) (unionQ (dequeue q1) q2 )
 
 
-------------------------      SET      --------------------------------------
-
+------------------------      STACK      --------------------------------------
+--Costo: O(n)
 apilar :: [a] -> Stack a
 apilar []     = emptyS
 apilar (x:xs) = push x (apilar xs)
 
-
+--Costo: O(n)
 desapilar :: Stack a -> [a]
-
 desapilar s = if isEmptyS s 
               then []
               else top s : desapilar (pop s) 
