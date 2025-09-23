@@ -500,7 +500,43 @@ esTerritorioExplorado t (ts:tss) = t == ts || esTerritorioExplorado t tss
 
 ----------------------------------
 --4.5
+exploradoresPorTerritorio :: Manada -> [(Territorio, [Nombre])]
+--Propósito: dada una manada, denota la lista de los pares cuyo primer elemento es un terri-
+--torio y cuyo segundo elemento es la lista de los nombres de los exploradores que exploraron
+--dicho territorio. Los territorios no deben repetirse.
+exploradoresPorTerritorio (M l) = exploradoresPorTerritorio' l
 
+exploradoresPorTerritorio' :: Lobo -> [(Territorio,[Nombre])]
+exploradoresPorTerritorio' (Cria _)                =   []
+exploradoresPorTerritorio' (Explorador n ts l1 l2) =   agregarExploradores(agregarExploradores ((exploradoresPorTerritorio l1)
+                                                                                               (exploradoresPorTerritorio l2))
+                                                                                               (territorioDeLobo(n ts))
+                                                                            ) 
+exploradoresPorTerritorio' (Cazador n ps l1 l2 l3) =   agregarExploradores (agregarExploradores( (exploradoresPorTerritorio l1)
+                                                                                                 (exploradoresPorTerritorio l2)
+                                                                                                )
+                                                                                             (exploradoresPorTerritorio l3)  
+                                                                            )       
+
+
+territorioDeLobo :: Nombre -> [Territorio] -> [(Territorio,[Nombre])]
+territorioDeLobo _ []     = []
+territorioDeLobo n (t:ts) = (t:n): territorioDeLobo n ts
+
+
+
+agregarExploradores :: [(Territorio,[Nombre])] ->[(Territorio,[Nombre])] -> [(Territorio,[Nombre])] 
+agregarExploradores []       ts2 =
+agregarExploradores (t1:ts1) ts2 =agregarExploradores ts1 (agregarExploradores' t1 ts2)
+
+
+
+
+agregarExploradores' :: (Territorio,[Nombre]) -> (Territorio,[Nombre]) ->(Territorio,[Nombre])
+agregarExploradores' t1 []       = t1 :[]
+agregarExploradores' t2 (t2:ts2) = if (fst t1 == fst t2)
+                                    then agregarExploradores'(fst t1, (snd t1 ++ snd t2)) ts2  )
+                                    else t2 : agregarExploradores' t1 ts2
 
 -------------------------------
 --4.6
@@ -508,13 +544,36 @@ esTerritorioExplorado t (ts:tss) = t == ts || esTerritorioExplorado t tss
 
 
 
+cazadoresSuperioresDe :: Nombre -> Manada -> [Nombre]
+--Propósito: dado el nombre de un lobo y una manada, indica el nombre de todos los cazadores que tienen como subordinado al
+--           lobo dado (puede ser un subordinado directo, o el subordinado de un subordinado).
+--Precondición: hay un lobo con dicho nombre y es único.
+
+cazadoresSuperioresDe n (M l) =cazadoresSuperioresDe' n l  
+
+
+cazadoresSuperioresDe' :: Nombre -> Lobo -> [Nombre]
+cazadoresSuperioresDe' nc (Cria _)                = []
+cazadoresSuperioresDe' nc (Explorador _ _ l1 l2)  = if existeElCazador nc l1 
+                                                    then  cazadoresSuperioresDe' nc l1
+                                                    else  cazadoresSuperioresDe' nc l2
+
+cazadoresSuperioresDe' nc (Cazador n ps l1 l2 l3) = if nc = n 
+                                                    then []
+                                                    else if existeElCazador nc l1
+                                                     then n : cazadoresSuperioresDe' nc:l1
+                                                     else if existeElCazador nc l2 
+                                                        then n : cazadoresSuperioresDe' nc l2
+                                                        else n : cazadoresSuperioresDe' nc l3      
 
 
 
 
 
-
-
+existeElCazador :: Nombre -> Lobo -> Bool
+existeElCazador n (Cria _)                = false
+existeElCazador n (Explorador _ _ l1 l2)  = existeElCazador n l1 || existeElCazador n 2
+existeElCazador n (Cazador nc _ l1 l2 l3) = n == nc || existeElCazador n l1 || existeElCazador n l2 || existeElCazador n l3                                       
 
 
 
