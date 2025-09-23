@@ -13,7 +13,8 @@ where
 
 data Stack a = S [a] Int 
 {-
-    Inv Rep: 
+    Inv Rep: en (S xs n) 
+                n es la cantidad de elemento en  xs
 -}
 
 

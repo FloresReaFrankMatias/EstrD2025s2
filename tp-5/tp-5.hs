@@ -189,3 +189,6 @@ desapilar s = if isEmptyS s
 
 
 
+insertarEnPos :: Int -> a -> Stack a -> Stack a
+insertarEnPos 0 x s = push a S
+insertarEnPos n x s = push (top s) (insertarEnPos (n-1) x (pop s)  )

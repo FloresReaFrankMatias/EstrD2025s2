@@ -11,6 +11,10 @@ module Queue (
 )
 where
 data Queue a = Q [a]
+{-
+
+-}
+
 --Costo: O(1)
 emptyQ  :: Queue a
 emptyQ = Q []
@@ -21,24 +25,25 @@ isEmptyQ (Q xs) = null xs
 
 --Costo : O(n)
 enqueue :: a -> Queue a -> Queue a
-enqueue x (Q ys) = Q (agregarAlFinal x ys)  
+enqueue x (Q ys) = Q (x:ys)  
+
+-
+--Costo: O(m)
+firtsQ :: Queue a -> a 
+firtsQ (Q xs) = ultElemento xs
+
+--Costo : O(n) recorre cada elem hasta llegaral ultimo siendo n l cantidad de elem de xs
+ultElemento :: [a] -> a
+ultElemento (x:[]) = x
+ultElemento (x:xs) = ultElemento xs    
+
+
+
+--Costo: O(m)
+dequeue :: Queue a -> Queue a 
+dequeue (Q xs) = Q (sinElUltimoElemento xs)
 
 --Costo : O(n)
-agregarAlFinal :: [a] -> a -> [a]
-agregarAlFinal []    e = [x]
-agregarAlFinal (x:xs) e = x : agregarAlFinal xs e 
-
---Costo: O(1)
-firtsQ :: Queue a -> a 
-firtsQ (Q xs) = head xs
-
-
---sin head
---firtsQ (Q xs) = primerElemento xs 
-
---primerElemento :: [a] -> a 
---primerElemento (x:xs) = x
-
---Costo: O(1)
-dequeue :: Queue a -> Queue a 
-dequeue (Q xs) = Q (tail xs)
+sinElUltimoElemento :: [a] -> [a]
+sinElUltimoElemento (x:[]) =
+sinElUltimoElemento (x:xs) = x  : sinElUltimoElemento xs

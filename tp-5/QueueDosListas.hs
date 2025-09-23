@@ -45,6 +45,9 @@ agregarElemABs x (Q fs bs) = Q fs (x:bs)
 firstQ :: Queue a 
 firstQ (Q fs bs) = head fs 
 
+--Costo: O(N): reverse e s lineal
 dequeue ::  Queue a -> Queue a 
-dequeue (Q fs bs) = 
+dequeue (Q fs bs) = if null (tail fs)
+                    then Q (reverse bs) []
+                    else Q (tail fs) bs
 
