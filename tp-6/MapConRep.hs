@@ -1,4 +1,4 @@
-module Map {
+module MapConRep {
         emptyM,
         assocM,
         lookupM,
@@ -25,16 +25,9 @@ emptyM :: Map k v
 emptyM = M []
 
 -----------------------------------------------
---Costo: O(n)
+--Costo: O(1)
 assocM:: Eq k => k -> v -> Map k v -> Map k v  
-assocM k v (M kvs) = M ( asociar k v kvs)
-
---Costo: O(n) por cada elemento realiza una ope constante(elem)
-asociar :: Eq k => k -> v -> [(k,v)] ->[(k,v)]
-asociar k v []             = [(k,v)]
-asociar k v [(k',v': kvs)] = if k == k'
-                             then (k',v'): kvs
-                             else (k,v): asociar           
+assocM k v (M kvs) = M ((k,v):kvs)          
 -----------------------------------------------
 --Costo: O(n)
 lookupM :: Eq k => k -> Map k v -> Maybe v
@@ -62,7 +55,7 @@ deleteAssoc k  [(k',v')] = if k = k'
 ----------------------------
 --costo: O(n)
 keys :: Map k v -> [k]
-keys (M kvs) = clavesDe kvs 
+keys (M kvs) = sinRepetidos(clavesDe kvs) 
 
 
 --costo:O(n) siendo n la cantidad de clave del map
@@ -70,3 +63,8 @@ keys (M kvs) = clavesDe kvs
 clavesDe ::[(k,v)] -> [k]
 clavesDe []         = []
 claveDe [(k,v):kvs] = k : clavesDe kvs 
+
+sinRepetidos ::[k] ->[k]
+
+
+
