@@ -1,10 +1,12 @@
-module Map {
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use newtype instead of data" #-}
+module Map( 
         emptyM,
         assocM,
         lookupM,
         deleteM, 
         keys
-}  
+)
 
 where
 data Map k v = M [(k,v)]
@@ -32,9 +34,9 @@ assocM k v (M kvs) = M ( asociar k v kvs)
 --Costo: O(n) por cada elemento realiza una ope constante(elem)
 asociar :: Eq k => k -> v -> [(k,v)] ->[(k,v)]
 asociar k v []             = [(k,v)]
-asociar k v [(k',v': kvs)] = if k == k'
+asociar k v ((k',v'): kvs) = if k == k'
                              then (k',v'): kvs
-                             else (k,v): asociar           
+                             else (k,v): asociar k v kvs           
 -----------------------------------------------
 --Costo: O(n)
 lookupM :: Eq k => k -> Map k v -> Maybe v
@@ -56,9 +58,9 @@ deleteM k (M kvs) = M (deleteAssoc k kvs)
 --Costo: O(n)
 deleteAssoc ::Eq  k => k -> [(k,v)] -> [(k,v)]
 deleteAssoc k  []        = []
-deleteAssoc k  [(k',v')] = if k = k'
+deleteAssoc k  ((k',v') : kvs) = if k == k'
                            then kvs 
-                           else (k',v) : deleteAssoc k kvs 
+                           else (k',v') : deleteAssoc k kvs 
 ----------------------------
 --costo: O(n)
 keys :: Map k v -> [k]
